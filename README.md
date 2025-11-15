@@ -1,7 +1,12 @@
-### 📽️ Recording
+## 📽️ Recording
 
 You can access the full recording here:
 👉 **[Click to watch the recording](https://drive.google.com/file/d/1R1hXEirP-LNZUEnPW7z-eajxMDlw05Iv/view?usp=sharing)**
+
+## Hosted Link
+
+You can access webiste here:
+👉 **[Website](https://flow12.netlify.app)**
 
 Made by Sagar Kapoor, sagarbadal70@gmail.com
 
