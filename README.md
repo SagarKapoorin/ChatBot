@@ -12,6 +12,8 @@ A simple and extensible chatbot flow builder built with React and React Flow, al
 - Validation on save only with clear errors
 - Persistent storage in browser localStorage (auto-restored on load)
 - Extensible architecture for adding new node types quickly
+ - Delete nodes via the top-right delete button on each node
+ - Responsive UI that works on mobile (drawer sidebar + touch support)
 
 **Current Node Types**
 - Text Message: simple text content
@@ -93,6 +95,8 @@ Made by Sagar Kapoor, sagarbadal70@gmail.com
   - Connect Nodes: drag from a node’s right handle (source) to another node’s left handle (target)
   - Edit Nodes: click a node to open the settings panel and edit its fields
   - Save Flow: click “Save Changes” to validate and persist your flow
+  - Delete Node: click the circular delete button in a node's top-right corner
+  - Mobile/Responsive: on small screens, open the nodes panel from the header menu; if drag-and-drop is limited, tap a node in the panel to add it to the canvas
 
 **Validation Rules (on save)**
 - If there is more than one node in the flow, and more than one node has no incoming connection (multiple entry points), saving is blocked with: “Cannot save Flow”.
