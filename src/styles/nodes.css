@@ -6,6 +6,7 @@
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   overflow: hidden;
+  position: relative;
 }
 .node-selected {
   border: 2px solid #7b68ee;
@@ -37,6 +38,25 @@
 .node-title {
   font-weight: 600;
   font-size: 13px;
+}
+.node-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.05);
+  color: #333;
+  cursor: pointer;
+}
+.node-delete:hover {
+  background: #ffebee;
+  color: #c62828;
 }
 .node-body {
   padding: 12px 14px;

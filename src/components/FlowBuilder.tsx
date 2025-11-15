@@ -267,17 +267,36 @@ export default function FlowBuilder() {
     [selectedNodeId, nodes, setNodes, setEdges]
   )
   //added immutable updater and prune edges when button options change
-
   const flow: Flow = useMemo(() => ({ nodes, edges }), [nodes, edges])
+  const [toast, setToast] = useState<null | { type: 'success' | 'error'; message: string }>(null)
+  const toastTimerRef = useRef<number | null>(null)
 
+  const notify = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ type, message })
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current)
+    }
+    toastTimerRef.current = window.setTimeout(() => setToast(null), 3000) as unknown as number
+  }, [])
   return (
     <div className="fb-container">
       <div className="fb-header">
         <div style={{ flex: 1 }} />
         <div className="save-area">
-          <SaveButton flow={flow} />
+          <SaveButton
+            flow={flow}
+            onSave={() => notify('Changes saved', 'success')}
+            onError={(errs) => notify(errs?.[0] || 'Unable to save changes', 'error')}
+          />
         </div>
       </div>
+      {toast && (
+        <div className="fb-toast-wrap">
+          <div className={`alert ${toast.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+            {toast.message}
+          </div>
+        </div>
+      )}
       <div className="fb-content">
         <div ref={wrapperRef} className="fb-canvas">
           <ReactFlow<AppRFNode, RFEdge>
