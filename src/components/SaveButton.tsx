@@ -16,7 +16,9 @@ export default function SaveButton({ flow, onSave }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {!valid && (
-        <div style={{ background: '#FFEBEE', color: '#C62828', padding: '8px 12px', borderRadius: 6 }}>
+        <div
+          style={{ background: '#FFEBEE', color: '#C62828', padding: '8px 12px', borderRadius: 6 }}
+        >
           Cannot save Flow
         </div>
       )}

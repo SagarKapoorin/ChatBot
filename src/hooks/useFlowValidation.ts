@@ -9,7 +9,7 @@ export function useFlowValidation(flow: Flow) {
       if (ids.has(n.id)) errors.push(`Duplicate node id: ${n.id}`)
       ids.add(n.id)
     }
-    const nodeIds = new Set(flow.nodes.map(n => n.id))
+    const nodeIds = new Set(flow.nodes.map((n) => n.id))
     for (const e of flow.edges) {
       if (!nodeIds.has(e.source)) errors.push(`Edge ${e.id} has unknown source ${e.source}`)
       if (!nodeIds.has(e.target)) errors.push(`Edge ${e.id} has unknown target ${e.target}`)
@@ -18,7 +18,7 @@ export function useFlowValidation(flow: Flow) {
       const indegree = new Map<string, number>()
       for (const n of flow.nodes) indegree.set(n.id, 0)
       for (const e of flow.edges) indegree.set(e.target, (indegree.get(e.target) || 0) + 1)
-      const zeroIn = Array.from(indegree.values()).filter(v => v === 0).length
+      const zeroIn = Array.from(indegree.values()).filter((v) => v === 0).length
       if (zeroIn > 1) errors.push('Cannot save Flow')
     }
     return { valid: errors.length === 0, errors }

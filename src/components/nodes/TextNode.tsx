@@ -1,6 +1,5 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import type { TextRFNode } from '../../types/flow.types'
-
 export default function TextNode({ data, selected }: NodeProps<TextRFNode>) {
   return (
     <div
@@ -13,9 +12,17 @@ export default function TextNode({ data, selected }: NodeProps<TextRFNode>) {
         overflow: 'hidden',
       }}
     >
-      <div style={{ background: '#B2E6D4', padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div
+        style={{
+          background: '#B2E6D4',
+          padding: '8px 10px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
+      >
         <span>💬</span>
-        <span style={{ fontWeight: 600 }}>Send Message</span>
+        <span style={{ fontWeight: 600 }}>Text Message</span>
       </div>
       <div style={{ padding: 10, background: '#fff' }}>{data?.text ?? ''}</div>
       <Handle type="target" position={Position.Left} />
