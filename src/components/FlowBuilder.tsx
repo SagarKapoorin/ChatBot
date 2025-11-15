@@ -39,24 +39,71 @@ function loadInitialFlow(): Flow {
         const pos = n.position
         if (typeof pos.x !== 'number' || typeof pos.y !== 'number') continue
         if (n.type === 'text' && n.data && typeof n.data.text === 'string') {
-          nodes.push({ id: n.id, type: 'text', position: { x: pos.x, y: pos.y }, data: { text: n.data.text } })
+          nodes.push({
+            id: n.id,
+            type: 'text',
+            position: { x: pos.x, y: pos.y },
+            data: { text: n.data.text },
+          })
         } else if (n.type === 'image' && n.data && typeof n.data.imageUrl === 'string') {
-          nodes.push({ id: n.id, type: 'image', position: { x: pos.x, y: pos.y }, data: { imageUrl: n.data.imageUrl, caption: typeof n.data.caption === 'string' ? n.data.caption : undefined } })
-        } else if (n.type === 'button' && n.data && Array.isArray(n.data.buttons) && typeof n.data.text === 'string') {
+          nodes.push({
+            id: n.id,
+            type: 'image',
+            position: { x: pos.x, y: pos.y },
+            data: {
+              imageUrl: n.data.imageUrl,
+              caption: typeof n.data.caption === 'string' ? n.data.caption : undefined,
+            },
+          })
+        } else if (
+          n.type === 'button' &&
+          n.data &&
+          Array.isArray(n.data.buttons) &&
+          typeof n.data.text === 'string'
+        ) {
           const btns = [] as { label: string; value: string }[]
           for (const b of n.data.buttons) {
-            if (b && typeof b.label === 'string' && typeof b.value === 'string') btns.push({ label: b.label, value: b.value })
+            if (b && typeof b.label === 'string' && typeof b.value === 'string')
+              btns.push({ label: b.label, value: b.value })
           }
-          nodes.push({ id: n.id, type: 'button', position: { x: pos.x, y: pos.y }, data: { text: n.data.text, buttons: btns } })
-        } else if (n.type === 'conditional' && n.data && typeof n.data.variable === 'string' && typeof n.data.condition === 'string') {
-          nodes.push({ id: n.id, type: 'conditional', position: { x: pos.x, y: pos.y }, data: { variable: n.data.variable, condition: n.data.condition } })
+          nodes.push({
+            id: n.id,
+            type: 'button',
+            position: { x: pos.x, y: pos.y },
+            data: { text: n.data.text, buttons: btns },
+          })
+        } else if (
+          n.type === 'conditional' &&
+          n.data &&
+          typeof n.data.variable === 'string' &&
+          typeof n.data.condition === 'string'
+        ) {
+          nodes.push({
+            id: n.id,
+            type: 'conditional',
+            position: { x: pos.x, y: pos.y },
+            data: { variable: n.data.variable, condition: n.data.condition },
+          })
         }
       }
     }
     if (parsed && parsed.edges && Array.isArray(parsed.edges)) {
       for (const e of parsed.edges) {
-        if (!e || typeof e.id !== 'string' || typeof e.source !== 'string' || typeof e.target !== 'string') continue
-        const edge: RFEdge = { id: e.id, source: e.source, target: e.target, type: typeof e.type === 'string' ? e.type : 'default', sourceHandle: typeof e.sourceHandle === 'string' ? e.sourceHandle : undefined, targetHandle: typeof e.targetHandle === 'string' ? e.targetHandle : undefined }
+        if (
+          !e ||
+          typeof e.id !== 'string' ||
+          typeof e.source !== 'string' ||
+          typeof e.target !== 'string'
+        )
+          continue
+        const edge: RFEdge = {
+          id: e.id,
+          source: e.source,
+          target: e.target,
+          type: typeof e.type === 'string' ? e.type : 'default',
+          sourceHandle: typeof e.sourceHandle === 'string' ? e.sourceHandle : undefined,
+          targetHandle: typeof e.targetHandle === 'string' ? e.targetHandle : undefined,
+        }
         edges.push(edge)
       }
     }
@@ -80,12 +127,20 @@ function loadInitialFlow(): Flow {
 function defaultFlow(): Flow {
   return {
     nodes: [
-      { id: nextId(), type: 'text', position: { x: 100, y: 100 }, data: { text: 'test message 1' } },
-      { id: nextId(), type: 'text', position: { x: 400, y: 100 }, data: { text: 'test message 2' } },
+      {
+        id: nextId(),
+        type: 'text',
+        position: { x: 100, y: 100 },
+        data: { text: 'test message 1' },
+      },
+      {
+        id: nextId(),
+        type: 'text',
+        position: { x: 400, y: 100 },
+        data: { text: 'test message 2' },
+      },
     ],
-    edges: [
-      { id: 'e1-2', source: 'node_1', target: 'node_2', type: 'default' },
-    ],
+    edges: [{ id: 'e1-2', source: 'node_1', target: 'node_2', type: 'default' }],
   }
 }
 
@@ -216,8 +271,8 @@ export default function FlowBuilder() {
   const flow: Flow = useMemo(() => ({ nodes, edges }), [nodes, edges])
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100%' }}>
-      <div ref={wrapperRef} style={{ flex: 1 }}>
+    <div className="fb-container">
+      <div ref={wrapperRef} className="fb-canvas">
         <ReactFlow<AppRFNode, RFEdge>
           nodes={nodes}
           edges={edges}
@@ -237,18 +292,8 @@ export default function FlowBuilder() {
           <Controls />
         </ReactFlow>
       </div>
-      <div
-        style={{
-          width: 300,
-          background: '#fff',
-          borderLeft: '1px solid #eee',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          padding: 12,
-        }}
-      >
-        <div style={{ alignSelf: 'stretch' }}>
+      <div className="fb-sidebar">
+        <div className="sidebar-actions">
           <SaveButton flow={flow} />
         </div>
         {selectedNode ? (

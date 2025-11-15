@@ -29,30 +29,10 @@ export default function SaveButton({ flow, onSave }: Props) {
     }
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {errors && (
-        <div style={{ background: '#FFEBEE', color: '#C62828', padding: '8px 12px', borderRadius: 6 }}>
-          Cannot save Flow
-        </div>
-      )}
-      {saved && !errors && (
-        <div style={{ background: '#E8F5E9', color: '#2E7D32', padding: '8px 12px', borderRadius: 6 }}>
-          saved
-        </div>
-      )}
-      <button
-        style={{
-          alignSelf: 'flex-end',
-          background: '#1976D2',
-          color: '#fff',
-          border: 'none',
-          padding: '8px 12px',
-          borderRadius: 6,
-          cursor: 'pointer',
-          opacity: 1,
-        }}
-        onClick={handleClick}
-      >
+    <div className="save-area">
+      {errors && <div className="alert alert-error">Cannot save Flow</div>}
+      {saved && !errors && <div className="alert alert-success">saved</div>}
+      <button className="btn btn-primary" onClick={handleClick}>
         Save Changes
       </button>
     </div>

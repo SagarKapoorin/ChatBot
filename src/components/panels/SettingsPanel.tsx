@@ -16,27 +16,13 @@ type Props = {
 export default function SettingsPanel({ node, onChange, onBack }: Props) {
   const type = node?.type
   return (
-    <div
-      style={{
-        width: 300,
-        background: '#fff',
-        borderLeft: '1px solid #eee',
-        padding: 12,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button
-          onClick={onBack}
-          style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 18 }}
-        >
+    <div className="settings-panel">
+      <div className="settings-header">
+        <button onClick={onBack} className="back-button">
           ←
         </button>
-        <div style={{ fontWeight: 600 }}>{labelFor(type)}</div>
+        <div className="settings-title">{labelFor(type)}</div>
       </div>
-      {/*added per node type settings rendered conditionally */}
       {type === 'text' && node && (
         <TextSettings
           data={node.data}
@@ -90,19 +76,8 @@ function TextSettings({
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => onChange({ text: e.target.value })
   return (
     <>
-      <div style={{ fontSize: 12, color: '#666' }}>Text</div>
-      <textarea
-        value={data?.text ?? ''}
-        onChange={handleChange}
-        rows={6}
-        style={{
-          width: '100%',
-          resize: 'vertical',
-          padding: 8,
-          borderRadius: 6,
-          border: '1px solid #ddd',
-        }}
-      />
+      <div className="form-label">Text</div>
+      <textarea value={data?.text ?? ''} onChange={handleChange} rows={6} className="textarea" />
     </>
   )
 }
@@ -120,19 +95,19 @@ function ImageSettings({
     onChange({ imageUrl: data?.imageUrl || '', caption: e.target.value })
   return (
     <>
-      <div style={{ fontSize: 12, color: '#666' }}>Image URL</div>
+      <div className="form-label">Image URL</div>
       <input
         value={data?.imageUrl ?? ''}
         onChange={onUrl}
         placeholder="https://..."
-        style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ddd' }}
+        className="input"
       />
-      <div style={{ fontSize: 12, color: '#666' }}>Caption</div>
+      <div className="form-label">Caption</div>
       <input
         value={data?.caption ?? ''}
         onChange={onCaption}
         placeholder="Optional"
-        style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ddd' }}
+        className="input"
       />
     </>
   )
@@ -160,43 +135,34 @@ function ButtonSettings({
     onChange({ text: data?.text || '', buttons: buttons.filter((_, i) => i !== idx) })
   return (
     <>
-      <div style={{ fontSize: 12, color: '#666' }}>Prompt</div>
+      <div className="form-label">Prompt</div>
       <input
         value={data?.text ?? ''}
         onChange={setText}
         placeholder="Ask a question"
-        style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ddd' }}
+        className="input"
       />
-      <div style={{ fontWeight: 600 }}>Buttons</div>
+      <div className="section-title">Buttons</div>
       {buttons.map((b, i) => (
-        <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        <div key={i} className="button-edit-row">
           <input
             value={b.label}
             onChange={setBtn(i, 'label')}
             placeholder="Label"
-            style={{ flex: 1, padding: 6, borderRadius: 6, border: '1px solid #ddd' }}
+            className="input flex-1"
           />
           <input
             value={b.value}
             onChange={setBtn(i, 'value')}
             placeholder="Value"
-            style={{ flex: 1, padding: 6, borderRadius: 6, border: '1px solid #ddd' }}
+            className="input flex-1"
           />
-          <button onClick={() => removeBtn(i)} style={{ padding: '6px 8px' }}>
+          <button onClick={() => removeBtn(i)} className="btn">
             ✕
           </button>
         </div>
       ))}
-      <button
-        onClick={addBtn}
-        style={{
-          alignSelf: 'flex-start',
-          padding: '6px 10px',
-          borderRadius: 6,
-          border: '1px solid #ddd',
-          background: '#f7f7f7',
-        }}
-      >
+      <button onClick={addBtn} className="btn">
         + Add Button
       </button>
     </>
@@ -216,21 +182,21 @@ function ConditionalSettings({
     onChange({ variable: data?.variable || '', condition: e.target.value })
   return (
     <>
-      <div style={{ fontSize: 12, color: '#666' }}>Variable</div>
+      <div className="form-label">Variable</div>
       <input
         value={data?.variable ?? ''}
         onChange={onVar}
         placeholder="e.g. answer"
-        style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ddd' }}
+        className="input"
       />
-      <div style={{ fontSize: 12, color: '#666' }}>Condition</div>
+      <div className="form-label">Condition</div>
       <input
         value={data?.condition ?? ''}
         onChange={onCond}
         placeholder={'e.g. == "yes"'}
-        style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ddd' }}
+        className="input"
       />
-      <div style={{ fontSize: 12, color: '#666' }}>Outputs: true, false</div>
+      <div className="muted">Outputs: true, false</div>
     </>
   )
 }
