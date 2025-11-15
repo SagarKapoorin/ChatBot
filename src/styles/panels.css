@@ -1,6 +1,7 @@
 .nodes-panel {
   background: #fff;
   padding: 20px;
+  overflow-y: auto;
 }
 .panel-title {
   font-weight: 600;

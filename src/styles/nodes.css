@@ -1,5 +1,6 @@
 .node {
   min-width: 220px;
+  max-width: 640px;
   border-radius: 8px;
   background: #fff;
   border: none;
@@ -45,6 +46,7 @@
   gap: 6px;
   color: #333;
   font-size: 13px;
+  word-break: break-word;
 }
 .muted {
   font-size: 12px;
