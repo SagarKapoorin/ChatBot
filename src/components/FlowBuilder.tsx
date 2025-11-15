@@ -272,39 +272,46 @@ export default function FlowBuilder() {
 
   return (
     <div className="fb-container">
-      <div ref={wrapperRef} className="fb-canvas">
-        <ReactFlow<AppRFNode, RFEdge>
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          isValidConnection={isValidConnection}
-          nodeTypes={nodeTypes}
-          onNodeClick={onNodeClick}
-          onPaneClick={onPaneClick}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onInit={(inst) => (rf.current = inst)}
-          fitView
-        >
-          <Background variant={BackgroundVariant.Dots} />
-          <Controls />
-        </ReactFlow>
-      </div>
-      <div className="fb-sidebar">
-        <div className="sidebar-actions">
+      <div className="fb-header">
+        <div style={{ flex: 1 }} />
+        <div className="save-area">
           <SaveButton flow={flow} />
         </div>
-        {selectedNode ? (
-          <SettingsPanel
-            node={selectedNode}
-            onChange={updateSelectedData}
-            onBack={() => setSelectedNodeId(undefined)}
-          />
-        ) : (
-          <NodesPanel />
-        )}
+      </div>
+      <div className="fb-content">
+        <div ref={wrapperRef} className="fb-canvas">
+          <ReactFlow<AppRFNode, RFEdge>
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            isValidConnection={isValidConnection}
+            nodeTypes={nodeTypes}
+            onNodeClick={onNodeClick}
+            onPaneClick={onPaneClick}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onInit={(inst) => (rf.current = inst)}
+            fitView
+          >
+            <Background variant={BackgroundVariant.Dots} />
+            <Controls />
+          </ReactFlow>
+        </div>
+        <div className="fb-sidebar">
+          <div className="sidebar-actions">
+            {selectedNode ? (
+              <SettingsPanel
+                node={selectedNode}
+                onChange={updateSelectedData}
+                onBack={() => setSelectedNodeId(undefined)}
+              />
+            ) : (
+              <NodesPanel />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
