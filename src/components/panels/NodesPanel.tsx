@@ -21,33 +21,42 @@ export default function NodesPanel() {
   //added drag payload to carry node type
   return (
     <div className="nodes-panel">
-      {availableNodes.map((n) => (
-        <div
-          key={n.type}
-          draggable
-          onDragStart={(e) => onDragStart(e, n.type)}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            background: '#fff',
-            border: '2px solid #5b5fc7',
-            borderRadius: 10,
-            padding: '16px 20px',
-            cursor: 'grab',
-            userSelect: 'none',
-            marginBottom: 12,
-            minHeight: 80,
-          }}
-        >
-          <span style={{ fontSize: 28, color: '#5b5fc7' }}>{n.icon}</span>
-          <div style={{ fontWeight: 600, fontSize: 14, color: '#5b5fc7', textAlign: 'center' }}>
-            {n.label}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: 10,
+        }}
+      >
+        {availableNodes.map((n) => (
+          <div
+            key={n.type}
+            draggable
+            onDragStart={(e) => onDragStart(e, n.type)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              background: '#fff',
+              border: '1px solid #5b5fc7',
+              borderRadius: 8,
+              padding: '10px 12px',
+              cursor: 'grab',
+              userSelect: 'none',
+              minHeight: 64,
+              width: '100%',
+              boxSizing: 'border-box',
+            }}
+          >
+            <span style={{ fontSize: 22, color: '#5b5fc7' }}>{n.icon}</span>
+            <div style={{ fontWeight: 600, fontSize: 13, color: '#5b5fc7', textAlign: 'center' }}>
+              {n.label}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }

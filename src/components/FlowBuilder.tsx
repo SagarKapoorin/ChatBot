@@ -7,6 +7,7 @@ import {
   useNodesState,
   useEdgesState,
   addEdge,
+  MarkerType,
   type Connection,
   type ReactFlowInstance,
   type NodeTypes,
@@ -269,6 +270,13 @@ export default function FlowBuilder() {
   //added immutable updater and prune edges when button options change
   const flow: Flow = useMemo(() => ({ nodes, edges }), [nodes, edges])
   const [toast, setToast] = useState<null | { type: 'success' | 'error'; message: string }>(null)
+  const defaultEdgeOptions = useMemo(
+    () => ({
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#9e9e9e', width: 18, height: 18 },
+      style: { stroke: '#9e9e9e', strokeWidth: 2 },
+    }),
+    []
+  )
   const toastTimerRef = useRef<number | null>(null)
 
   const notify = useCallback((message: string, type: 'success' | 'error') => {
@@ -312,6 +320,8 @@ export default function FlowBuilder() {
             onDrop={onDrop}
             onDragOver={onDragOver}
             onInit={(inst) => (rf.current = inst)}
+            defaultEdgeOptions={defaultEdgeOptions}
+            connectionLineStyle={{ stroke: '#9e9e9e', strokeWidth: 2 }}
             fitView
           >
             <Background variant={BackgroundVariant.Dots} />

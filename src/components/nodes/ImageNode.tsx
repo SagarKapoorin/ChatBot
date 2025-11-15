@@ -15,11 +15,13 @@ export default function ImageNode({ data, selected, id }: NodeProps<ImageRFNode>
         <button className="node-delete" title="Delete" onClick={handleDelete}>✕</button>
       </div>
       <div className="node-body">
-        {data?.imageUrl ? (
-          <img src={data.imageUrl} alt={data.caption || 'image'} className="node-image" />
-        ) : (
-          <div className="image-placeholder">No image URL</div>
-        )}
+        <div className="image-frame">
+          {data?.imageUrl ? (
+            <img src={data.imageUrl} alt={data.caption || 'image'} className="node-image" />
+          ) : (
+            <div className="image-placeholder">No image URL</div>
+          )}
+        </div>
         {data?.caption && <div className="image-caption">{data.caption}</div>}
       </div>
       <Handle type="target" position={Position.Left} />

@@ -34,7 +34,9 @@
   position: relative;
 }
 .fb-sidebar {
-  flex: 0 0 360px;
+  flex: 0 1 360px;
+  min-width: 260px;
+  max-width: 100%;
   background: #fff;
   border-left: 1px solid #e5e5e5;
   display: flex;
@@ -43,7 +45,19 @@
   padding: 0;
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
   overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
+}
+.fb-content { overflow-x: hidden; }
+
+@media (max-width: 1024px) {
+  .fb-sidebar { flex-basis: 300px; }
+}
+@media (max-width: 768px) {
+  .fb-sidebar { flex-basis: 260px; }
+}
+@media (max-width: 560px) {
+  .fb-sidebar { flex-basis: 240px; }
 }
 .sidebar-actions {
   padding: 20px;
