@@ -1,3 +1,8 @@
+### 📽️ Recording
+
+You can access the full recording here:
+👉 **[Click to watch the recording](https://drive.google.com/file/d/1R1hXEirP-LNZUEnPW7z-eajxMDlw05Iv/view?usp=sharing)**
+
 Made by Sagar Kapoor, sagarbadal70@gmail.com
 
 # BiteSpeed Chatbot Flow Builder
