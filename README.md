@@ -137,3 +137,38 @@ Example additions
 - Single entry point ensures linear chatbot starts; branching is explicit via Button/Condition nodes
 - Extensible types via discriminated unions and per-type components keep core stable
 - On-demand validation (on save) prevents disruptive error banners during editing
+**Node and Connection Constraints**
+
+- Node constraints
+  - Source handle (right side): one edge maximum. Cannot connect to multiple nodes from the same source handle.
+  - Target handle (left side): multiple edges allowed. Many nodes may connect into the same target.
+
+  Example (source handle):
+  
+  ALLOWED
+  Node A -> Node B
+  
+  NOT ALLOWED (two outgoing edges from A)
+  Node A -> Node B
+  Node A -> Node C
+
+  Example (target handle):
+  
+  ALLOWED (two incoming edges to C)
+  Node A ->
+           \-> Node C
+  Node B ->
+
+- Connection constraints
+  - You can
+    - Linear flows: Node A -> Node B -> Node C
+    - Convergence: multiple nodes connecting to one node
+    - Disconnected nodes temporarily while building
+  - You cannot
+    - Self-loop: Node A -> Node A
+    - Bidirectional loop: A -> B and B -> A
+    - Multiple outgoing edges from a single source handle
+    - Cycles: any circular path (A -> B -> C -> A)
+
+- Validation constraints (on Save)
+  - If there is more than 1 node in the flow, and more than one node has no incoming connection (multiple entry points), saving is blocked.

@@ -154,15 +154,15 @@ const nodeTypes: NodeTypes = {
 //added registry pattern to easily register new nodes
 
 export default function FlowBuilder() {
-  const initial = loadInitialFlow()
+const initial = useMemo(() => loadInitialFlow(), []);
   const [nodes, setNodes, onNodesChange] = useNodesState<AppRFNode>(initial.nodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState<RFEdge>(initial.edges)
   const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const rf = useRef<ReactFlowInstance<AppRFNode, RFEdge> | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  // Close sidebar when nodes panel starts a drag on small screens
-  // (NodesPanel dispatches a custom event during dragstart)
+  //Closex sidebar when nodes panel starts a drag on small screens
+  //(NodesPanel dispatches a custom event during dragstart)
   useEffect(() => {
     const handler = () => {
       if (window.innerWidth <= 768) setSidebarOpen(false)
@@ -170,8 +170,7 @@ export default function FlowBuilder() {
     window.addEventListener('fb-close-sidebar', handler as EventListener)
     return () => window.removeEventListener('fb-close-sidebar', handler as EventListener)
   }, [])
-
-  // Mobile: click-to-add from NodesPanel
+  //Mobile: click-to-add from NodesPanel
   useEffect(() => {
     const addHandler = (e: Event) => {
       const anyEvt = e as CustomEvent<{ type: string }>
@@ -217,24 +216,49 @@ export default function FlowBuilder() {
     (edgeOrConn: RFEdge | Connection) => {
       const sourceId = edgeOrConn.source
       if (!sourceId) return false
-      const source = nodes.find((n) => n.id === sourceId)
+      const targetId = (edgeOrConn).target as string | null | undefined
+      // Disallow self-loop
+      if (targetId && targetId === sourceId) return false
+      // Disallow bidirectional loop (A->B and B->A)
+      if (targetId && edges.some((e) => e.source === targetId && e.target === sourceId)) return false
       const sameSource = edges.filter((e) => e.source === sourceId)
-      //unique connection per handle as said in assignment
+      // unique connection per handle (button/conditional)
       if (edgeOrConn.sourceHandle) {
         const sameHandle = sameSource.filter((e) => e.sourceHandle === edgeOrConn.sourceHandle)
         if (sameHandle.length > 0) return false
       }
-      //type-based constraints as said in assignment
-      if (!source) return true
-      switch (source.type) {
-        case 'button':
-        case 'conditional':
-          //multiple handles allowed; each handle -> max 1 only in conditional and button
-          return !!edgeOrConn.sourceHandle
-        default:
-          //allow only one outgoing
-          return sameSource.length === 0
+      // type-based constraints
+      const source = nodes.find((n) => n.id === sourceId)
+      if (source) {
+        if (source.type === 'button' || source.type === 'conditional') {
+          if (!edgeOrConn.sourceHandle) return false
+        } else {
+          if (sameSource.length > 0) return false
+        }
       }
+
+      // Cycle check: if target exists, ensure adding this edge does not create a cycle
+      if (targetId) {
+        const adj = new Map<string, string[]>()
+        const push = (a: string, b: string) => {
+          if (!adj.has(a)) adj.set(a, [])
+          adj.get(a)!.push(b)
+        }
+        for (const e of edges) push(e.source, e.target)
+        // include the proposed edge
+        push(sourceId, targetId)
+        const seen = new Set<string>()
+        const stack: string[] = [targetId]
+        while (stack.length) {
+          const cur = stack.pop()!
+          if (cur === sourceId) return false
+          if (seen.has(cur)) continue
+          seen.add(cur)
+          const next = adj.get(cur)
+          if (next) for (const n of next) stack.push(n)
+        }
+      }
+      return true
     },
     [edges, nodes]
   )

@@ -5,7 +5,7 @@
   background: #fff;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 .node-selected {
@@ -120,3 +120,13 @@
   border-radius: 6px;
   padding: 6px 10px;
 }
+.fb-canvas .react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50%;
+  background: grey;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(123, 104, 238, 0.15);
+  z-index: 2;
+}
+
