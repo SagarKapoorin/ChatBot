@@ -25,6 +25,69 @@ import type { ButtonNodeData, NodeType } from '../types/flow.types'
 
 let idCounter = 1
 const nextId = () => `node_${idCounter++}`
+//added loader to restore saved flow from localstorage
+function loadInitialFlow(): Flow {
+  try {
+    const raw = localStorage.getItem('bitspeed.flow')
+    if (!raw) return defaultFlow()
+    const parsed = JSON.parse(raw)
+    const nodes: AppRFNode[] = []
+    const edges: RFEdge[] = []
+    if (parsed && parsed.nodes && Array.isArray(parsed.nodes)) {
+      for (const n of parsed.nodes) {
+        if (!n || typeof n.id !== 'string' || typeof n.type !== 'string' || !n.position) continue
+        const pos = n.position
+        if (typeof pos.x !== 'number' || typeof pos.y !== 'number') continue
+        if (n.type === 'text' && n.data && typeof n.data.text === 'string') {
+          nodes.push({ id: n.id, type: 'text', position: { x: pos.x, y: pos.y }, data: { text: n.data.text } })
+        } else if (n.type === 'image' && n.data && typeof n.data.imageUrl === 'string') {
+          nodes.push({ id: n.id, type: 'image', position: { x: pos.x, y: pos.y }, data: { imageUrl: n.data.imageUrl, caption: typeof n.data.caption === 'string' ? n.data.caption : undefined } })
+        } else if (n.type === 'button' && n.data && Array.isArray(n.data.buttons) && typeof n.data.text === 'string') {
+          const btns = [] as { label: string; value: string }[]
+          for (const b of n.data.buttons) {
+            if (b && typeof b.label === 'string' && typeof b.value === 'string') btns.push({ label: b.label, value: b.value })
+          }
+          nodes.push({ id: n.id, type: 'button', position: { x: pos.x, y: pos.y }, data: { text: n.data.text, buttons: btns } })
+        } else if (n.type === 'conditional' && n.data && typeof n.data.variable === 'string' && typeof n.data.condition === 'string') {
+          nodes.push({ id: n.id, type: 'conditional', position: { x: pos.x, y: pos.y }, data: { variable: n.data.variable, condition: n.data.condition } })
+        }
+      }
+    }
+    if (parsed && parsed.edges && Array.isArray(parsed.edges)) {
+      for (const e of parsed.edges) {
+        if (!e || typeof e.id !== 'string' || typeof e.source !== 'string' || typeof e.target !== 'string') continue
+        const edge: RFEdge = { id: e.id, source: e.source, target: e.target, type: typeof e.type === 'string' ? e.type : 'default', sourceHandle: typeof e.sourceHandle === 'string' ? e.sourceHandle : undefined, targetHandle: typeof e.targetHandle === 'string' ? e.targetHandle : undefined }
+        edges.push(edge)
+      }
+    }
+    // update counter from existing node ids
+    let max = 0
+    for (const n of nodes) {
+      const m = /node_(\d+)$/.exec(n.id)
+      if (m) {
+        const num = Number(m[1])
+        if (!Number.isNaN(num) && num > max) max = num
+      }
+    }
+    idCounter = Math.max(1, max + 1)
+    if (nodes.length === 0) return defaultFlow()
+    return { nodes, edges }
+  } catch {
+    return defaultFlow()
+  }
+}
+//added default flow when no saved data exists
+function defaultFlow(): Flow {
+  return {
+    nodes: [
+      { id: nextId(), type: 'text', position: { x: 100, y: 100 }, data: { text: 'test message 1' } },
+      { id: nextId(), type: 'text', position: { x: 400, y: 100 }, data: { text: 'test message 2' } },
+    ],
+    edges: [
+      { id: 'e1-2', source: 'node_1', target: 'node_2', type: 'default' },
+    ],
+  }
+}
 
 const nodeTypes: NodeTypes = {
   text: TextNode,
@@ -35,13 +98,9 @@ const nodeTypes: NodeTypes = {
 //added registry pattern to easily register new nodes
 
 export default function FlowBuilder() {
-  const [nodes, setNodes, onNodesChange] = useNodesState<AppRFNode>([
-    { id: nextId(), type: 'text', position: { x: 100, y: 100 }, data: { text: 'test message 1' } },
-    { id: nextId(), type: 'text', position: { x: 400, y: 100 }, data: { text: 'test message 2' } },
-  ])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<RFEdge>([
-    { id: 'e1-2', source: 'node_1', target: 'node_2', type: 'default' },
-  ])
+  const initial = loadInitialFlow()
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppRFNode>(initial.nodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState<RFEdge>(initial.edges)
   const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const rf = useRef<ReactFlowInstance<AppRFNode, RFEdge> | null>(null)

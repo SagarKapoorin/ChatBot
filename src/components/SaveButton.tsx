@@ -1,5 +1,6 @@
 import type { Flow } from '../types/flow.types'
-import { useFlowValidation } from '../hooks/useFlowValidation'
+import { validateFlow } from '../hooks/useFlowValidation'
+import { useState } from 'react'
 
 type Props = {
   flow: Flow
@@ -7,19 +8,36 @@ type Props = {
 }
 
 export default function SaveButton({ flow, onSave }: Props) {
-  const { valid } = useFlowValidation(flow)
+  const [errors, setErrors] = useState<string[] | null>(null)
+  const [saved, setSaved] = useState(false)
   const handleClick = () => {
-    if (!valid) return
-    if (onSave) onSave(flow)
-    else console.log(JSON.stringify(flow))
+    const result = validateFlow(flow)
+    if (!result.valid) {
+      setErrors(result.errors)
+      setSaved(false)
+      return
+    }
+    try {
+      const json = JSON.stringify(flow)
+      localStorage.setItem('bitspeed.flow', json)
+      setErrors(null)
+      setSaved(true)
+      if (onSave) onSave(flow)
+    } catch {
+      setErrors(['failed to save to localstorage'])
+      setSaved(false)
+    }
   }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {!valid && (
-        <div
-          style={{ background: '#FFEBEE', color: '#C62828', padding: '8px 12px', borderRadius: 6 }}
-        >
+      {errors && (
+        <div style={{ background: '#FFEBEE', color: '#C62828', padding: '8px 12px', borderRadius: 6 }}>
           Cannot save Flow
+        </div>
+      )}
+      {saved && !errors && (
+        <div style={{ background: '#E8F5E9', color: '#2E7D32', padding: '8px 12px', borderRadius: 6 }}>
+          saved
         </div>
       )}
       <button
@@ -30,10 +48,9 @@ export default function SaveButton({ flow, onSave }: Props) {
           border: 'none',
           padding: '8px 12px',
           borderRadius: 6,
-          cursor: valid ? 'pointer' : 'not-allowed',
-          opacity: valid ? 1 : 0.6,
+          cursor: 'pointer',
+          opacity: 1,
         }}
-        disabled={!valid}
         onClick={handleClick}
       >
         Save Changes
