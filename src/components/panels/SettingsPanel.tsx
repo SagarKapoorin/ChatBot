@@ -16,37 +16,39 @@ type Props = {
 export default function SettingsPanel({ node, onChange, onBack }: Props) {
   const type = node?.type
   return (
-    <div className="settings-panel">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div className="settings-header">
         <button onClick={onBack} className="back-button">
           ←
         </button>
         <div className="settings-title">{labelFor(type)}</div>
       </div>
-      {type === 'text' && node && (
-        <TextSettings
-          data={node.data}
-          onChange={(d) => onChange((n) => (n.type === 'text' ? { ...n, data: d } : n))}
-        />
-      )}
-      {type === 'image' && node && (
-        <ImageSettings
-          data={node.data}
-          onChange={(d) => onChange((n) => (n.type === 'image' ? { ...n, data: d } : n))}
-        />
-      )}
-      {type === 'button' && node && (
-        <ButtonSettings
-          data={node.data}
-          onChange={(d) => onChange((n) => (n.type === 'button' ? { ...n, data: d } : n))}
-        />
-      )}
-      {type === 'conditional' && node && (
-        <ConditionalSettings
-          data={node.data}
-          onChange={(d) => onChange((n) => (n.type === 'conditional' ? { ...n, data: d } : n))}
-        />
-      )}
+      <div className="settings-panel" style={{ padding: '20px' }}>
+        {type === 'text' && node && (
+          <TextSettings
+            data={node.data}
+            onChange={(d) => onChange((n) => (n.type === 'text' ? { ...n, data: d } : n))}
+          />
+        )}
+        {type === 'image' && node && (
+          <ImageSettings
+            data={node.data}
+            onChange={(d) => onChange((n) => (n.type === 'image' ? { ...n, data: d } : n))}
+          />
+        )}
+        {type === 'button' && node && (
+          <ButtonSettings
+            data={node.data}
+            onChange={(d) => onChange((n) => (n.type === 'button' ? { ...n, data: d } : n))}
+          />
+        )}
+        {type === 'conditional' && node && (
+          <ConditionalSettings
+            data={node.data}
+            onChange={(d) => onChange((n) => (n.type === 'conditional' ? { ...n, data: d } : n))}
+          />
+        )}
+      </div>
     </div>
   )
 }
@@ -75,10 +77,10 @@ function TextSettings({
 }) {
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => onChange({ text: e.target.value })
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <div className="form-label">Text</div>
       <textarea value={data?.text ?? ''} onChange={handleChange} rows={6} className="textarea" />
-    </>
+    </div>
   )
 }
 
@@ -94,22 +96,26 @@ function ImageSettings({
   const onCaption = (e: ChangeEvent<HTMLInputElement>) =>
     onChange({ imageUrl: data?.imageUrl || '', caption: e.target.value })
   return (
-    <>
-      <div className="form-label">Image URL</div>
-      <input
-        value={data?.imageUrl ?? ''}
-        onChange={onUrl}
-        placeholder="https://..."
-        className="input"
-      />
-      <div className="form-label">Caption</div>
-      <input
-        value={data?.caption ?? ''}
-        onChange={onCaption}
-        placeholder="Optional"
-        className="input"
-      />
-    </>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div>
+        <div className="form-label">Image URL</div>
+        <input
+          value={data?.imageUrl ?? ''}
+          onChange={onUrl}
+          placeholder="https://..."
+          className="input"
+        />
+      </div>
+      <div>
+        <div className="form-label">Caption</div>
+        <input
+          value={data?.caption ?? ''}
+          onChange={onCaption}
+          placeholder="Optional"
+          className="input"
+        />
+      </div>
+    </div>
   )
 }
 
@@ -134,38 +140,42 @@ function ButtonSettings({
   const removeBtn = (idx: number) =>
     onChange({ text: data?.text || '', buttons: buttons.filter((_, i) => i !== idx) })
   return (
-    <>
-      <div className="form-label">Prompt</div>
-      <input
-        value={data?.text ?? ''}
-        onChange={setText}
-        placeholder="Ask a question"
-        className="input"
-      />
-      <div className="section-title">Buttons</div>
-      {buttons.map((b, i) => (
-        <div key={i} className="button-edit-row">
-          <input
-            value={b.label}
-            onChange={setBtn(i, 'label')}
-            placeholder="Label"
-            className="input flex-1"
-          />
-          <input
-            value={b.value}
-            onChange={setBtn(i, 'value')}
-            placeholder="Value"
-            className="input flex-1"
-          />
-          <button onClick={() => removeBtn(i)} className="btn">
-            ✕
-          </button>
-        </div>
-      ))}
-      <button onClick={addBtn} className="btn">
-        + Add Button
-      </button>
-    </>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div>
+        <div className="form-label">Prompt</div>
+        <input
+          value={data?.text ?? ''}
+          onChange={setText}
+          placeholder="Ask a question"
+          className="input"
+        />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="section-title">Buttons</div>
+        {buttons.map((b, i) => (
+          <div key={i} className="button-edit-row">
+            <input
+              value={b.label}
+              onChange={setBtn(i, 'label')}
+              placeholder="Label"
+              className="input flex-1"
+            />
+            <input
+              value={b.value}
+              onChange={setBtn(i, 'value')}
+              placeholder="Value"
+              className="input flex-1"
+            />
+            <button onClick={() => removeBtn(i)} className="btn">
+              ✕
+            </button>
+          </div>
+        ))}
+        <button onClick={addBtn} className="btn">
+          + Add Button
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -181,22 +191,26 @@ function ConditionalSettings({
   const onCond = (e: ChangeEvent<HTMLInputElement>) =>
     onChange({ variable: data?.variable || '', condition: e.target.value })
   return (
-    <>
-      <div className="form-label">Variable</div>
-      <input
-        value={data?.variable ?? ''}
-        onChange={onVar}
-        placeholder="e.g. answer"
-        className="input"
-      />
-      <div className="form-label">Condition</div>
-      <input
-        value={data?.condition ?? ''}
-        onChange={onCond}
-        placeholder={'e.g. == "yes"'}
-        className="input"
-      />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div>
+        <div className="form-label">Variable</div>
+        <input
+          value={data?.variable ?? ''}
+          onChange={onVar}
+          placeholder="e.g. answer"
+          className="input"
+        />
+      </div>
+      <div>
+        <div className="form-label">Condition</div>
+        <input
+          value={data?.condition ?? ''}
+          onChange={onCond}
+          placeholder={'e.g. == "yes"'}
+          className="input"
+        />
+      </div>
       <div className="muted">Outputs: true, false</div>
-    </>
+    </div>
   )
 }

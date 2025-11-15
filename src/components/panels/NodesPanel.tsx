@@ -20,8 +20,7 @@ export default function NodesPanel() {
   }
   //added drag payload to carry node type
   return (
-    <div style={{ background: '#fff', padding: 12 }}>
-      <div style={{ fontWeight: 600, marginBottom: 12 }}>Nodes</div>
+    <div className="nodes-panel">
       {availableNodes.map((n) => (
         <div
           key={n.type}
@@ -29,21 +28,23 @@ export default function NodesPanel() {
           onDragStart={(e) => onDragStart(e, n.type)}
           style={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: 8,
-            background: '#f7f7f7',
-            border: '1px solid #e0e0e0',
-            borderRadius: 8,
-            padding: '10px 12px',
+            background: '#fff',
+            border: '2px solid #5b5fc7',
+            borderRadius: 10,
+            padding: '16px 20px',
             cursor: 'grab',
             userSelect: 'none',
-            marginBottom: 8,
+            marginBottom: 12,
+            minHeight: 80,
           }}
         >
-          <span style={{ fontSize: 18 }}>{n.icon}</span>
-          <div>
-            <div style={{ fontWeight: 600 }}>{n.label}</div>
-            <div style={{ fontSize: 12, color: '#666' }}>{n.description}</div>
+          <span style={{ fontSize: 28, color: '#5b5fc7' }}>{n.icon}</span>
+          <div style={{ fontWeight: 600, fontSize: 14, color: '#5b5fc7', textAlign: 'center' }}>
+            {n.label}
           </div>
         </div>
       ))}
