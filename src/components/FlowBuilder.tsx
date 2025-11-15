@@ -12,7 +12,7 @@ import {
   type ReactFlowInstance,
   type NodeTypes,
 } from '@xyflow/react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
 import NodesPanel from './panels/NodesPanel'
 import SettingsPanel from './panels/SettingsPanel'
@@ -160,6 +160,53 @@ export default function FlowBuilder() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const rf = useRef<ReactFlowInstance<AppRFNode, RFEdge> | null>(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  // Close sidebar when nodes panel starts a drag on small screens
+  // (NodesPanel dispatches a custom event during dragstart)
+  useEffect(() => {
+    const handler = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false)
+    }
+    window.addEventListener('fb-close-sidebar', handler as EventListener)
+    return () => window.removeEventListener('fb-close-sidebar', handler as EventListener)
+  }, [])
+
+  // Mobile: click-to-add from NodesPanel
+  useEffect(() => {
+    const addHandler = (e: Event) => {
+      const anyEvt = e as CustomEvent<{ type: string }>
+      const t = anyEvt?.detail?.type
+      if (!t || !isNodeType(t)) return
+      const rect = wrapperRef.current?.getBoundingClientRect()
+      const center = rect
+        ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+        : { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+      const position = rf.current?.screenToFlowPosition(center) || { x: 0, y: 0 }
+      const id = nextId()
+      let node: AppRFNode
+      if (t === 'text') node = { id, type: t, position, data: { text: 'message' } }
+      else if (t === 'image') node = { id, type: t, position, data: { imageUrl: '', caption: '' } }
+      else if (t === 'button')
+        node = {
+          id,
+          type: t,
+          position,
+          data: {
+            text: 'Choose an option',
+            buttons: [
+              { label: 'Yes', value: 'yes' },
+              { label: 'No', value: 'no' },
+            ],
+          },
+        }
+      else node = { id, type: t, position, data: { variable: 'answer', condition: '== "yes"' } }
+      setNodes((nds) => nds.concat(node))
+      setSelectedNodeId(id)
+      if (window.innerWidth <= 768) setSidebarOpen(true)
+    }
+    window.addEventListener('fb-add-node', addHandler as EventListener)
+    return () => window.removeEventListener('fb-add-node', addHandler as EventListener)
+  }, [setNodes])
 
   const selectedNode = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId),
@@ -241,8 +288,14 @@ export default function FlowBuilder() {
     event.dataTransfer.dropEffect = 'move'
   }, [])
 
-  const onNodeClick = useCallback((_: MouseEvent, n: AppRFNode) => setSelectedNodeId(n.id), [])
-  const onPaneClick = useCallback(() => setSelectedNodeId(undefined), [])
+  const onNodeClick = useCallback((_: MouseEvent, n: AppRFNode) => {
+    setSelectedNodeId(n.id)
+    if (window.innerWidth <= 768) setSidebarOpen(true)
+  }, [])
+  const onPaneClick = useCallback(() => {
+    setSelectedNodeId(undefined)
+    if (window.innerWidth <= 768) setSidebarOpen(false)
+  }, [])
 
   const updateSelectedData = useCallback(
     (updater: (node: AppRFNode) => AppRFNode) => {
@@ -289,6 +342,13 @@ export default function FlowBuilder() {
   return (
     <div className="fb-container">
       <div className="fb-header">
+        <button
+          className="menu-button"
+          aria-label="Toggle sidebar"
+          onClick={() => setSidebarOpen((v) => !v)}
+        >
+          ☰
+        </button>
         <div style={{ flex: 1 }} />
         <div className="save-area">
           <SaveButton
@@ -328,7 +388,7 @@ export default function FlowBuilder() {
             <Controls />
           </ReactFlow>
         </div>
-        <div className="fb-sidebar">
+        <div className={`fb-sidebar ${sidebarOpen ? 'is-open' : ''}`}>
           <div className="sidebar-actions">
             {selectedNode ? (
               <SettingsPanel
@@ -342,6 +402,10 @@ export default function FlowBuilder() {
           </div>
         </div>
       </div>
+      <div
+        className={`fb-overlay ${sidebarOpen ? 'show' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      />
     </div>
   )
 }

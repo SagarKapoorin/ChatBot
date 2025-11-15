@@ -17,6 +17,12 @@ export default function NodesPanel() {
   const onDragStart = (event: React.DragEvent, type: Item['type']) => {
     event.dataTransfer.setData('application/reactflow', type)
     event.dataTransfer.effectAllowed = 'move'
+    //xlose sidebar on small screens to allow dropping on canvas
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('fb-close-sidebar'))
+      }, 0)
+    }
   }
   //added drag payload to carry node type
   return (
@@ -33,6 +39,12 @@ export default function NodesPanel() {
             key={n.type}
             draggable
             onDragStart={(e) => onDragStart(e, n.type)}
+            onClick={() => {
+              if (window.innerWidth <= 768) {
+                const evt = new CustomEvent('fb-add-node', { detail: { type: n.type } })
+                window.dispatchEvent(evt)
+              }
+            }}
             style={{
               display: 'flex',
               flexDirection: 'column',
